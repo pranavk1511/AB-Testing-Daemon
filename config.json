@@ -1,0 +1,16 @@
+[
+  {
+    "key": { "value": "exp1" },
+    "status": "running",
+    "salt": "abc123",
+    "traffic": 1.0,
+    "holdout": 0.0,
+    "variants": [
+      { "name": "control", "weight": 0.5 },
+      { "name": "treatmentA", "weight": 0.5 }
+    ],
+    "targets": { "countries": ["US","IN"], "minAppVersion": 30 },
+    "start": "2025-01-01T00:00:00Z",
+    "end": "2025-12-31T23:59:59Z"
+  }
+]
