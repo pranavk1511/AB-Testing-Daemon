@@ -7,10 +7,24 @@ group = "com.abdaemon"
 version = "0.1.0"
 
 java {
-  // New API: use toolchains instead of sourceCompatibility/targetCompatibility
-  toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
-  withSourcesJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
+
+sourceSets {
+    main {
+        java {
+            setSrcDirs(listOf("app/src/main/java"))
+        }
+    }
+    test {
+        java {
+            setSrcDirs(listOf("app/src/test/java"))
+        }
+    }
+}
+
 
 tasks.withType<JavaCompile>().configureEach {
   // Reproducible, strict builds
@@ -21,6 +35,10 @@ tasks.withType<JavaCompile>().configureEach {
 application {
   // We'll add this Main later; for now you can leave a placeholder
   mainClass.set("com.abdaemon.Main")
+}
+
+repositories {
+  mavenCentral()
 }
 
 dependencies {
