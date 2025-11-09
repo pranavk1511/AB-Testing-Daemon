@@ -33,8 +33,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-  // We'll add this Main later; for now you can leave a placeholder
-  mainClass.set("com.abdaemon.Main")
+    mainClass.set("com.abdaemon.infrastructure.Main")
 }
 
 repositories {
@@ -42,9 +41,17 @@ repositories {
 }
 
 dependencies {
+    // JSON
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.2")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.2")
+
+    // Logging (SLF4J API + Logback backend)
+    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation("ch.qos.logback:logback-classic:1.5.7")
+    implementation("ch.qos.logback:logback-core:1.5.7")
+
+    // Testing
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
 }
 

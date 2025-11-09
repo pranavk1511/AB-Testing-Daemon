@@ -1,28 +1,36 @@
 package com.abdaemon.infrastructure;
 
-import com.abdaemon.application.*;
-import com.abdaemon.domain.*;
-import com.abdaemon.infrastructure.config.FileConfigRepository;
-import com.abdaemon.infrastructure.logging.NoopEventSink;
+import com.abdaemon.infrastructure.config.RefreshingFileConfigRepository;
+import com.abdaemon.infrastructure.logging.WalEventSink;
+import com.abdaemon.infrastructure.server.HttpAssignmentServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.file.Path;
-import java.util.Map;
+import java.time.Duration;
 
-/** Minimal runnable demo: loads config.json and assigns one subject. */
+/** Starts the config reloader + HTTP endpoint + WAL sink. */
 public final class Main {
-    public static void main(String[] args) {
-        var repo = new FileConfigRepository(Path.of("config.json"));
-        var sink = new NoopEventSink();
-        var useCase = new AssignTreatmentUseCase(repo, new Bucketer());
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-        var subject = Subject.of(new UserId("user123"), null, null);
-        var ctx = Map.of("country", "US", "app_ver", "42");
+    public static void main(String[] args) throws Exception {
+        String cfgPath = System.getenv().getOrDefault("AB_CFG", "config.json");
+        int port = Integer.parseInt(System.getenv().getOrDefault("AB_PORT", "8080"));
+        var period = Duration.ofSeconds(Long.parseLong(System.getenv().getOrDefault("AB_CFG_PERIOD_SEC", "5")));
 
-        var key = new ExperimentKey("exp1");
-        var decision = useCase.assign(key, subject, ctx);
+        // WAL settings
+        String walDir = System.getenv().getOrDefault("AB_WAL_DIR", "wal");
+        long maxMb = Long.parseLong(System.getenv().getOrDefault("AB_WAL_MAX_MB", "32"));
+        boolean fsync = Boolean.parseBoolean(System.getenv().getOrDefault("AB_WAL_FSYNC", "false"));
 
-        sink.enqueueExposure(key.value(), decision.treatment(),
-                Bucketer.stableSubjectKey(subject), java.time.Instant.now(), ctx);
+        try (var repo = new RefreshingFileConfigRepository(Path.of(cfgPath), period);
+             var sink = new WalEventSink(Path.of(walDir), maxMb * 1024L * 1024L, fsync);
+             var http = new HttpAssignmentServer(port, repo, sink)) {
 
-        System.out.println("Assignment → " + decision);
+            http.start();
+            log.info("AB daemon up: http=127.0.0.1:{} | cfg={} | version={} | wal_dir={} max={}MB fsync={}",
+                    port, cfgPath, repo.version(), walDir, maxMb, fsync);
+            Thread.currentThread().join();
+        }
     }
 }

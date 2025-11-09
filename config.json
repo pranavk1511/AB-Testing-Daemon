@@ -1,15 +1,15 @@
 [
   {
-    "key": { "value": "exp1" },
+    "key": { "value": "checkout_color" },
     "status": "running",
-    "salt": "abc123",
+    "salt": "b8c6e2",
     "traffic": 1.0,
     "holdout": 0.0,
     "variants": [
-      { "name": "control", "weight": 0.5 },
-      { "name": "treatmentA", "weight": 0.5 }
+      { "name": "control", "weight": 0.9 },
+      { "name": "blue",    "weight": 0.1 }
     ],
-    "targets": { "countries": ["US","IN"], "minAppVersion": 30 },
+    "targets": { "countries": ["US","CA"], "minAppVersion": 30 },
     "start": "2025-01-01T00:00:00Z",
     "end": "2025-12-31T23:59:59Z"
   }
