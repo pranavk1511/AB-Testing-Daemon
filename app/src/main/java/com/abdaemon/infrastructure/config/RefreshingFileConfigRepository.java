@@ -5,6 +5,9 @@ import com.abdaemon.domain.ExperimentKey;
 import com.abdaemon.ports.outbound.ConfigRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +27,10 @@ public final class RefreshingFileConfigRepository implements ConfigRepository, A
     private static final Logger log = LoggerFactory.getLogger(RefreshingFileConfigRepository.class);
 
     private final Path filePath;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
     private final ScheduledExecutorService exec;
     private final Duration period;
 

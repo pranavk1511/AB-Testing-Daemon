@@ -60,3 +60,7 @@ A lightweight Java service that runs on the same host/pod as your application to
     - Non‑root user, strict FS perms on UDS (/var/run/ab.sock), read‑only root, whitelisted state dirs
     - Optional config signing (Ed25519) and WAL at‑rest encryption
     - PII minimization: hashed IDs, redaction map for context fields
+
+## How to test this ? 
+
+Refer `testing.md` :)

@@ -6,8 +6,8 @@
     "traffic": 1.0,
     "holdout": 0.0,
     "variants": [
-      { "name": "control", "weight": 0.9 },
-      { "name": "blue",    "weight": 0.1 }
+      { "name": "control", "weight": 0.7 },
+      { "name": "blue",    "weight": 0.3 }
     ],
     "targets": { "countries": ["US","CA"], "minAppVersion": 30 },
     "start": "2025-01-01T00:00:00Z",

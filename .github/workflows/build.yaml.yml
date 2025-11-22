@@ -1,0 +1,31 @@
+name: Gradle Build
+
+on:
+  # Run on every PR opened/updated against main
+  pull_request:
+    branches: [ main ]
+
+  # Run on any direct push to main (e.g., merges, admin fixes)
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build --no-daemon
