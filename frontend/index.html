@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>AB Daemon Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>A/B Testing Daemon</h1>
+        <div id="health-indicator" class="health health-unknown">
+            Health: <span id="health-text">UNKNOWN</span>
+        </div>
+    </header>
+
+    <section class="card">
+        <h2>Assignment Request</h2>
+        <form id="assign-form">
+            <div class="form-row">
+                <label for="exp">Experiment Key</label>
+                <input id="exp" name="exp" type="text" placeholder="checkout_color" required />
+            </div>
+
+            <div class="form-row">
+                <label for="user">User ID</label>
+                <input id="user" name="user" type="text" placeholder="u123" />
+            </div>
+
+            <div class="form-row">
+                <label for="device">Device ID</label>
+                <input id="device" name="device" type="text" placeholder="optional" />
+            </div>
+
+            <div class="form-row">
+                <label for="req">Request ID</label>
+                <input id="req" name="req" type="text" placeholder="optional" />
+            </div>
+
+            <div class="form-row">
+                <label for="country">Country</label>
+                <input id="country" name="country" type="text" placeholder="US" />
+            </div>
+
+            <div class="form-row">
+                <label for="app_ver">App Version</label>
+                <input id="app_ver" name="app_ver" type="number" placeholder="42" />
+            </div>
+
+            <button type="submit">Get Assignment</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Result</h2>
+        <div id="result-meta">
+            <div><strong>Treatment:</strong> <span id="result-treatment">–</span></div>
+            <div><strong>Decision:</strong> <span id="result-decision">–</span></div>
+            <div><strong>Config Version:</strong> <span id="result-version">–</span></div>
+            <div><strong>Timestamp:</strong> <span id="result-ts">–</span></div>
+        </div>
+        <h3>Raw JSON</h3>
+        <pre id="result-raw">{}</pre>
+    </section>
+
+    <section class="card">
+        <h2>History (last 10 requests)</h2>
+        <ul id="history-list"></ul>
+    </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f172a;
+    color: #e5e7eb;
+    padding: 2rem;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+h1 {
+    font-size: 1.8rem;
+}
+
+.card {
+    background: #020617;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+}
+
+.card h3 {
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
+}
+
+label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    color: #9ca3af;
+}
+
+input {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #374151;
+    background: #020617;
+    color: #e5e7eb;
+    outline: none;
+}
+
+input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 1px #6366f1;
+}
+
+button {
+    margin-top: 0.25rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: none;
+    background: #4f46e5;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+button:hover {
+    background: #4338ca;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#result-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.4rem 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+pre {
+    background: #020617;
+    border-radius: 8px;
+    border: 1px solid #1f2937;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    overflow-x: auto;
+}
+
+#history-list {
+    list-style: none;
+    font-size: 0.85rem;
+}
+
+#history-list li {
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #111827;
+}
+#history-list li:last-child {
+    border-bottom: none;
+}
+
+.health {
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+}
+
+.health-unknown {
+    background: #111827;
+    border-color: #374151;
+}
+
+.health-ok {
+    background: rgba(22, 163, 74, 0.15);
+    border-color: #16a34a;
+    color: #bbf7d0;
+}
+
+.health-bad {
+    background: rgba(220, 38, 38, 0.15);
+    border-color: #dc2626;
+    color: #fecaca;
+}

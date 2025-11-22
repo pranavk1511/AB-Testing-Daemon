@@ -7,7 +7,7 @@
     "holdout": 0.0,
     "variants": [
       { "name": "control", "weight": 0.7 },
-      { "name": "blue",    "weight": 0.3 }
+      { "name": "treatment-1",    "weight": 0.3 }
     ],
     "targets": { "countries": ["US","CA"], "minAppVersion": 30 },
     "start": "2025-01-01T00:00:00Z",

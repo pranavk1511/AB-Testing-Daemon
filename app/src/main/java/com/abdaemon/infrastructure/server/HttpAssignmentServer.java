@@ -38,6 +38,7 @@ public final class HttpAssignmentServer implements AutoCloseable {
     private void health(HttpExchange ex) throws IOException {
         byte[] body = "{\"status\":\"SERVING\"}".getBytes(StandardCharsets.UTF_8);
         ex.getResponseHeaders().add("Content-Type", "application/json");
+        ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         ex.sendResponseHeaders(200, body.length);
         ex.getResponseBody().write(body);
         ex.close();
@@ -81,6 +82,7 @@ public final class HttpAssignmentServer implements AutoCloseable {
     private void respondJson(HttpExchange ex, int code, Object obj) throws IOException {
         byte[] body = mapper.writeValueAsBytes(obj);
         ex.getResponseHeaders().add("Content-Type", "application/json");
+        ex.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         ex.sendResponseHeaders(code, body.length);
         ex.getResponseBody().write(body);
         ex.close();
