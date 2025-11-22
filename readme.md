@@ -65,7 +65,8 @@ A lightweight Java service that runs on the same host/pod as your application to
 
 Refer `testing.md` :)
 
-### Workflow Diagram 
+## Workflow Diagram 
+
 ```mermaid
 sequenceDiagram
     autonumber
