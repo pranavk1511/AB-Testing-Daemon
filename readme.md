@@ -1,72 +1,95 @@
 # On‑Box A/B Testing Daemon (Java) — Centralized Functional Spec
 
+# AB Testing Daemon
+
+A lightweight, deterministic, file‑driven A/B testing daemon with:
+- Hot‑reload configuration
+- Deterministic hashing (bucketing)
+- Traffic & holdout gating
+- Targeting rules (country, app version)
+- Durable exposure logging using WAL
+- Simple HTTP API (`/health`, `/assign`)
+- Minimal HTML/JS frontend
+- Clean architecture (domain → application → infra)
+
+
 ## Purpose & Scope
 
 A lightweight Java service that runs on the same host/pod as your application to provide on‑box A/B experiment assignment, owner‑controlled traffic allocation, and reliable event logging (exposures & goals) with operational guardrails.
 
-## Functional-Requirements
+# Features
 
-- Sub‑millisecond assignment via gRPC over Unix Domain Socket (UDS)
-- Owner‑defined % allocation per treatment (branch), hot‑reloaded config
-- Sticky per‑subject assignments without central storage
-- Durable exposure/goal logging with batch shipping
-- First‑class observability (metrics, health, SRM)
-- Safe, minimal operational footprint (systemd/K8s sidecar)
+## Deterministic User Assignment
+Users are assigned to variants based on:
+- `salt`
+- stable subject identity (`userId`, `deviceId`, or `requestId`)
+- weighted variants
+- traffic and holdout settings
 
-## Non - Functional Requirement 
+## Hot Reload Config
+`RefreshingFileConfigRepository` monitors `config.json`.
+When the file changes:
+- reloads config
+- revalidates experiments
+- swaps an immutable snapshot
+- increments config version
 
-- Statistical analysis or experiment decisioning (happens downstream)
-- UI for editing experiments (config produced by CI/ops)
+No daemon restart required.
 
-## High Level Architecture 
+## Targets & Eligibility
+Supports optional rules:
+- Allowed countries
+- Minimum app version
+- Start/end date
+- Status: `running`, `draft`, `paused`
 
-- Control Plane: versioned, signed configs (JSON/Proto) in S3/GCS/HTTP.
-- On‑Box Daemon (Java 21): Netty gRPC on UDS, in‑RAM config, assigner, event queue + WAL, shipper, /metrics & /health.
-- Analytics Sink: Kafka/Kinesis/S3 (pluggable) for offline analysis & dashboards. 
+## Durable WAL Logging
+Every exposure event is written to:
+```
+wal/events-YYYYMMDD-HHMMSS-#.wal
+```
 
-**Data Path (Request)**: App → Assign() → Daemon → variant → App renders → App LogExposure() → later LogGoal() → Daemon batches → Sink.
+Append-only NDJSON lines ensure:
+- crash safety
+- replayability
+- simple analysis
 
-## Core Functionalities 
+Optional `fsync` for stricter durability.
 
-1. Config Management
+##  Simple Frontend
+`frontend/index.html` + JS app:
+- shows daemon health
+- sends assign requests
+- displays treatment, decision, configVersion
+- maintains a history list
 
-    - Periodic pull (5–30s) with ETag/version check
-    - Schema + semantic validation (weights sum, time windows, targets)
-    - Signature verification (optional) and atomic hot‑swap
-    - Tracks and emits config_version & config_age_seconds
 
-2. Owner‑Controlled Traffic Allocation
-    - Owner sets weights per treatment and traffic cap in config
-    - Optional per‑segment overrides and time‑based rollout schedule
-    - QA overrides (force treatment for test users) with validation
+# Project Structure
 
-3. Sticky Assignment 
-    - Subject identity: user_id ▸ fallback device_id ▸ fallback request_id
-    - Deterministic bucket via hash(salt + subject_key) → map to weighted ranges
-    - Traffic gate & eligibility checks (targets, window, holdout) before assignment
+```
+/src
+  /domain         -> Experiment, Variant, Targets, Subject, AssignmentDecision
+  /application    -> AssignTreatmentUseCase, Bucketer, Ports
+  /infrastructure
+      /config     -> RefreshingFileConfigRepository + Jackson loader
+      /logging    -> WalEventSink
+      /server     -> HttpAssignmentServer
+      Main.java   -> Daemon entrypoint
 
-4. Event Logging & Durability
-    - In‑memory bounded queue + Write‑Ahead Log (WAL) on disk
-    - Batch shipper to sink with exponential backoff & dead‑letter policy
-    - Exactly‑once enqueue semantics within the daemon process
+/frontend
+  index.html
+  app.js
+  styles.css
 
-5. Observability & Guardrails
-    - Prometheus metrics: latency histograms, per‑variant counts, queue depth, shipper status, config staleness, SRM χ²
-    - Health endpoints: liveness/readiness; degraded when stale config/backlog
-    - Kill‑switches: global force‑control, per‑experiment pause
+config.json        -> Experiment definitions
+ab-daemon.env      -> .env-style config (gitignored)
+wal/               -> Write-Ahead Log output
+```
 
-6. Security & Hardening
 
-    - Non‑root user, strict FS perms on UDS (/var/run/ab.sock), read‑only root, whitelisted state dirs
-    - Optional config signing (Ed25519) and WAL at‑rest encryption
-    - PII minimization: hashed IDs, redaction map for context fields
 
-## How to test this ? 
 
-Refer `testing.md` :)
-
-## Workflow Diagram 
-
+# Workflow Diagram
 ```mermaid
 sequenceDiagram
     autonumber
